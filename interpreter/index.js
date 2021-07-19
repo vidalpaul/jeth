@@ -4,13 +4,11 @@ const SUB = 'SUB';
 const MUL = 'MUL';
 const DIV = 'DIV';
 const PUSH = 'PUSH';
-
 const LT = 'LT';
 const GT = 'GT';
 const EQ = 'EQ';
 const AND = 'AND';
 const OR = 'OR';
-
 const JUMP = 'JUMP';
 const JUMPI = 'JUMPI';
 
@@ -21,6 +19,12 @@ class Intepreter {
       stack: [],
       code: [],
     };
+  }
+
+  jump() {
+    const destination = this.state.stack.pop();
+    this.state.programCounter = destination;
+    this.state.programCounter--;
   }
 
   runCode(code) {
@@ -59,6 +63,15 @@ class Intepreter {
             if (opCode === 'AND') result = a && b;
             if (opCode === 'OR') result = a || b;
             this.state.stack.push(result);
+            break;
+          case JUMP:
+            this.jump();
+            break;
+          case JUMPI:
+            const condition = this.state.stack.pop();
+            if (condition === 1) {
+              this.jump();
+            }
             break;
           default:
             break;
@@ -111,3 +124,11 @@ console.log('Result of 0 AND 1', result);
 code = [PUSH, 1, PUSH, 0, OR, STOP];
 result = new Intepreter().runCode(code);
 console.log('Result of 0 OR 1', result);
+
+code = [PUSH, 6, JUMP, PUSH, 0, JUMP, PUSH, 'Jump successful', STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of JUMP', result);
+
+code = [PUSH, 8, PUSH, 1, JUMPI, PUSH, 0, JUMP, PUSH, 'Jumpi successful', STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of JUMPI', result);
