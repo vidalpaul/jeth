@@ -31,24 +31,17 @@ class Intepreter {
             this.state.stack.push(value);
             break;
           case ADD:
-            let a = this.state.stack.pop();
-            let b = this.state.stack.pop();
-            this.state.stack.push(a + b);
-            break;
           case SUB:
-            let a = this.state.stack.pop();
-            let b = this.state.stack.pop();
-            this.state.stack.push(a - b);
-            break;
           case MUL:
-            let a = this.state.stack.pop();
-            let b = this.state.stack.pop();
-            this.state.stack.push(a * b);
-            break;
           case DIV:
-            let a = this.state.stack.pop();
-            let b = this.state.stack.pop();
-            this.state.stack.push(a / b);
+            const a = this.state.stack.pop();
+            const b = this.state.stack.pop();
+            let result;
+            if (opCode === 'ADD') result = a + b;
+            if (opCode === 'SUB') result = a - b;
+            if (opCode === 'MUL') result = a * b;
+            if (opCode === 'DIV') result = a / b;
+            this.state.stack.push(result);
             break;
           default:
             break;
