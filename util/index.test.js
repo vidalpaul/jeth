@@ -8,5 +8,9 @@ describe('util', () => {
       expect(sortCharacters({ foo: 'foo', bar: 'bar' })).toEqual(
         sortCharacters({ bar: 'bar', foo: 'foo' })
       ));
+    it('checks if it creates a different string for objects with different properties', () =>
+      expect(sortCharacters({ foo: 'foo' })).not.toEqual(
+        sortCharacters({ bar: 'bar' })
+      ));
   });
 });
