@@ -1,5 +1,8 @@
 const STOP = 'STOP';
 const ADD = 'ADD';
+const SUB = 'SUB';
+const MUL = 'MUL';
+const DIV = 'DIV';
 const PUSH = 'PUSH';
 
 const code = [PUSH, 2, PUSH, 7, ADD, STOP];
@@ -28,9 +31,24 @@ class Intepreter {
             this.state.stack.push(value);
             break;
           case ADD:
-            const a = this.state.stack.pop();
-            const b = this.state.stack.pop();
+            let a = this.state.stack.pop();
+            let b = this.state.stack.pop();
             this.state.stack.push(a + b);
+            break;
+          case SUB:
+            let a = this.state.stack.pop();
+            let b = this.state.stack.pop();
+            this.state.stack.push(a - b);
+            break;
+          case MUL:
+            let a = this.state.stack.pop();
+            let b = this.state.stack.pop();
+            this.state.stack.push(a * b);
+            break;
+          case DIV:
+            let a = this.state.stack.pop();
+            let b = this.state.stack.pop();
+            this.state.stack.push(a / b);
             break;
           default:
             break;
