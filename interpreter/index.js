@@ -1,3 +1,5 @@
+const { interpreterDirective } = require('@babel/types');
+
 const STOP = 'STOP';
 const ADD = 'ADD';
 const SUB = 'SUB';
@@ -12,17 +14,41 @@ const OR = 'OR';
 const JUMP = 'JUMP';
 const JUMPI = 'JUMPI';
 
-class Intepreter {
+const OPCODE_MAP = {
+  STOP,
+  ADD,
+  SUB,
+  MUL,
+  DIV,
+  PUSH,
+  LT,
+  GT,
+  EQ,
+  AND,
+  OR,
+  JUMP,
+  JUMPI,
+};
+
+const EXECUTION_COMPLETE = 'Execution complete';
+const EXECUTION_LIMIT = 10000;
+
+class Interpreter {
   constructor() {
     this.state = {
       programCounter: 0,
       stack: [],
       code: [],
+      executionCount: 0,
     };
   }
 
   jump() {
     const destination = this.state.stack.pop();
+
+    if (destination < 0 || destination > this.state.code.length) {
+      throw new Error(`Invalid destination: ${destination}`);
+    }
     this.state.programCounter = destination;
     this.state.programCounter--;
   }
@@ -31,13 +57,24 @@ class Intepreter {
     this.state.code = code;
 
     while (this.state.programCounter < this.state.code.length) {
+      this.state.executionCount++;
+      if (this.state.executionCount > EXECUTION_LIMIT) {
+        throw new Error(
+          `Check for an infinite loop. Execution limit of ${EXECUTION_LIMIT} exceeded`
+        );
+      }
       const opCode = this.state.code[this.state.programCounter];
       try {
         switch (opCode) {
           case STOP:
-            throw new Error('Execution is complete');
+            throw new Error(EXECUTION_COMPLETE);
           case PUSH:
             this.state.programCounter++;
+
+            if (this.state.programCounter === this.state.code.length) {
+              throw new Error(`The 'PUSH' instruction cannot be last`);
+            }
+
             const value = this.state.code[this.state.programCounter];
             this.state.stack.push(value);
             break;
@@ -77,7 +114,10 @@ class Intepreter {
             break;
         }
       } catch (error) {
-        return this.state.stack[this.state.stack.length - 1];
+        if (error.message === EXECUTION_COMPLETE) {
+          return this.state.stack[this.state.stack.length - 1];
+        }
+        throw error;
       }
 
       this.state.programCounter++;
@@ -85,50 +125,74 @@ class Intepreter {
   }
 }
 
-let code = [PUSH, 2, PUSH, 3, ADD, STOP];
-let result = new Intepreter().runCode(code);
-console.log('Result of 3 ADD 2', result);
+Interpreter.OPCODE_MAP = OPCODE_MAP;
+module.exports = Interpreter;
 
-code = [PUSH, 2, PUSH, 3, SUB, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 3 SUB 2', result);
+// let code = [PUSH, 2, PUSH, 3, ADD, STOP];
+// let result = new Intepreter().runCode(code);
+// console.log('Result of 3 ADD 2', result);
 
-code = [PUSH, 2, PUSH, 3, MUL, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 3 MUL 2', result);
+// code = [PUSH, 2, PUSH, 3, SUB, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 3 SUB 2', result);
 
-code = [PUSH, 2, PUSH, 3, DIV, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 3 DIV 2', result);
+// code = [PUSH, 2, PUSH, 3, MUL, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 3 MUL 2', result);
 
-code = [PUSH, 2, PUSH, 3, LT, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 3 LT 2', result);
+// code = [PUSH, 2, PUSH, 3, DIV, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 3 DIV 2', result);
 
-code = [PUSH, 2, PUSH, 3, GT, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 3 GT 2', result);
+// code = [PUSH, 2, PUSH, 3, LT, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 3 LT 2', result);
 
-code = [PUSH, 2, PUSH, 3, EQ, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 3 EQ 2', result);
+// code = [PUSH, 2, PUSH, 3, GT, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 3 GT 2', result);
 
-code = [PUSH, 1, PUSH, 0, EQ, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 2 EQ 2', result);
+// code = [PUSH, 2, PUSH, 3, EQ, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 3 EQ 2', result);
 
-code = [PUSH, 1, PUSH, 0, AND, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 0 AND 1', result);
+// code = [PUSH, 1, PUSH, 0, EQ, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 2 EQ 2', result);
 
-code = [PUSH, 1, PUSH, 0, OR, STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of 0 OR 1', result);
+// code = [PUSH, 1, PUSH, 0, AND, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 0 AND 1', result);
 
-code = [PUSH, 6, JUMP, PUSH, 0, JUMP, PUSH, 'Jump successful', STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of JUMP', result);
+// code = [PUSH, 1, PUSH, 0, OR, STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of 0 OR 1', result);
 
-code = [PUSH, 8, PUSH, 1, JUMPI, PUSH, 0, JUMP, PUSH, 'Jumpi successful', STOP];
-result = new Intepreter().runCode(code);
-console.log('Result of JUMPI', result);
+// code = [PUSH, 6, JUMP, PUSH, 0, JUMP, PUSH, 'Jump successful', STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of JUMP', result);
+
+// code = [PUSH, 8, PUSH, 1, JUMPI, PUSH, 0, JUMP, PUSH, 'Jumpi successful', STOP];
+// result = new Intepreter().runCode(code);
+// console.log('Result of JUMPI', result);
+
+// code = [PUSH, 99, JUMP, PUSH, 0, JUMP, PUSH, 'Jump successful', STOP];
+// try {
+//   new Intepreter().runCode(code);
+// } catch (error) {
+//   console.log('Invalid destination error: ', error.message);
+// }
+
+// code = [PUSH, 0, PUSH];
+// try {
+//   new Intepreter().runCode(code);
+// } catch (error) {
+//   console.log('Expected invalid PUSH error: ', error.message);
+// }
+
+// code = [PUSH, 0, JUMP, STOP];
+// try {
+//   new Intepreter().runCode(code);
+// } catch (error) {
+//   console.log('Expected invalid exectuion error: ', error.message);
+// }

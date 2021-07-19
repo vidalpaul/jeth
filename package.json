@@ -1,0 +1,23 @@
+{
+  "name": "jeth",
+  "version": "1.0.0",
+  "description": "a JavaScript implementation of the Ethereum protocol",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vidalpaul/jeth.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vidalpaul/jeth/issues"
+  },
+  "homepage": "https://github.com/vidalpaul/jeth#readme",
+  "dependencies": {
+    "jest": "^27.0.6"
+  }
+}
