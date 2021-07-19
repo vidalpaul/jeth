@@ -5,6 +5,15 @@ const MUL = 'MUL';
 const DIV = 'DIV';
 const PUSH = 'PUSH';
 
+const LT = 'LT';
+const GT = 'GT';
+const EQ = 'EQ';
+const AND = 'AND';
+const OR = 'OR';
+
+const JUMP = 'JUMP';
+const JUMPI = 'JUMPI';
+
 class Intepreter {
   constructor() {
     this.state = {
@@ -32,6 +41,11 @@ class Intepreter {
           case SUB:
           case MUL:
           case DIV:
+          case LT:
+          case GT:
+          case EQ:
+          case AND:
+          case OR:
             const a = this.state.stack.pop();
             const b = this.state.stack.pop();
             let result;
@@ -39,6 +53,11 @@ class Intepreter {
             if (opCode === 'SUB') result = a - b;
             if (opCode === 'MUL') result = a * b;
             if (opCode === 'DIV') result = a / b;
+            if (opCode === 'LT') result = a < b ? 1 : 0;
+            if (opCode === 'GT') result = a > b ? 1 : 0;
+            if (opCode === 'EQ') result = a === b ? 1 : 0;
+            if (opCode === 'AND') result = a && b;
+            if (opCode === 'OR') result = a || b;
             this.state.stack.push(result);
             break;
           default:
@@ -68,3 +87,27 @@ console.log('Result of 3 MUL 2', result);
 code = [PUSH, 2, PUSH, 3, DIV, STOP];
 result = new Intepreter().runCode(code);
 console.log('Result of 3 DIV 2', result);
+
+code = [PUSH, 2, PUSH, 3, LT, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 3 LT 2', result);
+
+code = [PUSH, 2, PUSH, 3, GT, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 3 GT 2', result);
+
+code = [PUSH, 2, PUSH, 3, EQ, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 3 EQ 2', result);
+
+code = [PUSH, 1, PUSH, 0, EQ, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 2 EQ 2', result);
+
+code = [PUSH, 1, PUSH, 0, AND, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 0 AND 1', result);
+
+code = [PUSH, 1, PUSH, 0, OR, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 0 OR 1', result);
