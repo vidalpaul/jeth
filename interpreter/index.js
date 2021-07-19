@@ -5,8 +5,6 @@ const MUL = 'MUL';
 const DIV = 'DIV';
 const PUSH = 'PUSH';
 
-const code = [PUSH, 2, PUSH, 7, ADD, STOP];
-
 class Intepreter {
   constructor() {
     this.state = {
@@ -55,5 +53,18 @@ class Intepreter {
   }
 }
 
-const intepreter = new Intepreter();
-intepreter.runCode(code);
+let code = [PUSH, 2, PUSH, 3, ADD, STOP];
+let result = new Intepreter().runCode(code);
+console.log('Result of 3 ADD 2', result);
+
+code = [PUSH, 2, PUSH, 3, SUB, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 3 SUB 2', result);
+
+code = [PUSH, 2, PUSH, 3, MUL, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 3 MUL 2', result);
+
+code = [PUSH, 2, PUSH, 3, DIV, STOP];
+result = new Intepreter().runCode(code);
+console.log('Result of 3 DIV 2', result);
