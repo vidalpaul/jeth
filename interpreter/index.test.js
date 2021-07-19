@@ -1,4 +1,4 @@
-const { expect, it } = require('@jest/globals');
+const { expect, it, describe } = require('@jest/globals');
 const Interpreter = require('./index');
 
 const { STOP, ADD, SUB, MUL, DIV, PUSH, LT, GT, EQ, AND, OR, JUMP, JUMPI } =
@@ -74,6 +74,78 @@ describe('Interpreter', () => {
       it('checks if one values is grater than another', () => {
         expect(new Interpreter().runCode([PUSH, 1, PUSH, 0, OR, STOP])).toEqual(
           1
+        );
+      });
+    });
+
+    describe('and the code includes JUMP', () => {
+      it('jumps to a destination', () => {
+        expect(
+          new Interpreter().runCode([
+            PUSH,
+            6,
+            JUMP,
+            PUSH,
+            0,
+            JUMP,
+            PUSH,
+            'Jump successful',
+            STOP,
+          ])
+        ).toEqual('Jump successful');
+      });
+    });
+
+    describe('and the code includes JUMPI', () => {
+      it('jumps to a destination', () => {
+        expect(
+          new Interpreter().runCode([
+            PUSH,
+            8,
+            PUSH,
+            1,
+            JUMPI,
+            PUSH,
+            0,
+            JUMP,
+            PUSH,
+            'Jumpi successful',
+            STOP,
+          ])
+        ).toEqual('Jumpi successful');
+      });
+    });
+
+    describe('and the code includes an invalid JUMP destination', () => {
+      it('throws an error', () => {
+        expect(() =>
+          new Interpreter().runCode([
+            PUSH,
+            99,
+            JUMP,
+            PUSH,
+            0,
+            JUMP,
+            PUSH,
+            'Jump successful',
+            STOP,
+          ])
+        ).toThrow('Invalid destination: 99');
+      });
+    });
+
+    describe('and the code includes an invalid PUSH value', () => {
+      it('throws an error', () => {
+        expect(() => new Interpreter().runCode([PUSH, 0, PUSH])).toThrow(
+          "The 'PUSH' instruction cannot be last"
+        );
+      });
+    });
+
+    describe('and the code includes an infinite loop', () => {
+      it('throws an error', () => {
+        expect(() => new Interpreter().runCode([PUSH, 0, JUMP, STOP])).toThrow(
+          'Check for an infinite loop.'
         );
       });
     });
