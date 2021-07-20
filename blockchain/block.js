@@ -85,11 +85,12 @@ class Block {
 
       if (
         Math.abs(
-          lastBlock.blockheaders.difficulty - block.blockHeaders.difficulty
+          lastBlock.blockHeaders.difficulty - block.blockHeaders.difficulty
         ) > 1
       ) {
-        return reject(new Error('The difficulty must only adjust by one'));
+        return reject(new Error('The difficulty must only adjust by 1'));
       }
+
       const target = Block.calculateBlockTargetHash({ lastBlock });
       const { blockHeaders } = block;
       const { nonce } = blockHeaders;
