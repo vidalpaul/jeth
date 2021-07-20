@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/vidalpaul/jeth#readme",
   "dependencies": {
-    "jest": "^27.0.6"
+    "jest": "^27.0.6",
+    "js-sha3": "^0.8.0"
   }
 }
