@@ -18,6 +18,9 @@ describe('util', () => {
       expect(keccakHash('foo')).toEqual(
         'b2a7ad9b4a2ee6d984cc5c2ad81d0c2b2902fa410670aa3f2f4f668a1f80611c'
       );
+      expect(keccakHash('ofo')).toEqual(
+        'b2a7ad9b4a2ee6d984cc5c2ad81d0c2b2902fa410670aa3f2f4f668a1f80611c'
+      );
     });
   });
 });
