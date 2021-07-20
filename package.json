@@ -4,7 +4,9 @@
   "description": "a JavaScript implementation of the Ethereum protocol",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "dev": "nodemon ./api",
+    "start": "node ./api"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,9 @@
   },
   "homepage": "https://github.com/vidalpaul/jeth#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "jest": "^27.0.6",
-    "js-sha3": "^0.8.0"
+    "js-sha3": "^0.8.0",
+    "nodemon": "^2.0.12"
   }
 }
