@@ -9,6 +9,9 @@
     "dev-peer": "nodemon ./api --peer",
     "start": "node ./api"
   },
+  "jest":{
+    "testEnvironment": "node"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vidalpaul/jeth.git"
@@ -21,6 +24,7 @@
   },
   "homepage": "https://github.com/vidalpaul/jeth#readme",
   "dependencies": {
+    "elliptic": "^6.5.4",
     "express": "^4.17.1",
     "jest": "^27.0.6",
     "js-sha3": "^0.8.0",
