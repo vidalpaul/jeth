@@ -30,6 +30,8 @@ const getMine = () => {
   });
 };
 
+let toAccountData;
+
 postTransact({})
   .then((postTransactResponse) => {
     console.log(
