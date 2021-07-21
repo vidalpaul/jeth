@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --watchAll",
     "dev": "nodemon ./api",
+    "dev-peer": "nodemon ./api --peer",
     "start": "node ./api"
   },
   "repository": {
