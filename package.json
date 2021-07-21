@@ -7,7 +7,8 @@
     "test": "jest --watchAll",
     "dev": "nodemon ./api",
     "dev-peer": "nodemon ./api --peer",
-    "start": "node ./api"
+    "start": "node ./api",
+    "api-test": "node ./api-test.js"
   },
   "jest": {
     "testEnvironment": "node"

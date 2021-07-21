@@ -16,6 +16,8 @@ const transaction = Transaction.createTransaction({ account });
 
 transactionQueue.add(transaction);
 
+app.use(express.json());
+
 app.get('/blockchain', (req, res, next) => {
   const { chain } = blockchain;
   res.json({ chain });
@@ -32,6 +34,17 @@ app.get('/blockchain/mine', (req, res, next) => {
       res.json({ block });
     })
     .catch(next);
+});
+
+app.post('/account/transact', (req, res, next) => {
+  const { to, value } = req.body;
+  const transaction = Transaction.createTransaction({
+    account: !to ? new Account() : account,
+    to,
+    value,
+  });
+  transactionQueue.add(transaction);
+  res.json({ transaction });
 });
 
 app.use((err, req, res, next) => {
