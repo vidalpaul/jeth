@@ -8,7 +8,9 @@ const GENESIS_DATA = {
     number: 0,
     timestamp: '--genesis-timestamp--',
     nonce: 0,
+    transactionsRoot: '--genesis-transactions-root--',
   },
+  transactionSeries: [],
 };
 
 const MILLISECONDS = 1;

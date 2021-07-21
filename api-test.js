@@ -20,18 +20,40 @@ const postTransact = ({ to, value }) => {
   });
 };
 
-postTransact({}).then((postTransactResponse) => {
-  console.log(
-    'postTransactResponse (createAccountTransaction)',
-    postTransactResponse
-  );
-  const toAccountData = postTransactResponse.transaction.data.accountData;
-  return postTransact({ to: toAccountData, value: 20 }).then(
-    (postTransactResponse2) => {
-      console.log(
-        'postTransactResponse (standardTransaction)',
-        postTransactResponse2
-      );
-    }
-  );
-});
+const getMine = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      request(`${BASE_URL}/blockchain/mine`, (error, response, body) => {
+        return resolve(JSON.parse(body));
+      });
+    }, 3000);
+  });
+};
+
+postTransact({})
+  .then((postTransactResponse) => {
+    console.log(
+      'postTransactResponse (Create Account Transaction)',
+      postTransactResponse
+    );
+
+    toAccountData = postTransactResponse.transaction.data.accountData;
+
+    return getMine();
+  })
+  .then((getMineResponse) => {
+    console.log('getMineResponse', getMineResponse);
+
+    return postTransact({ to: toAccountData.address, value: 20 });
+  })
+  .then((postTransactResponse2) => {
+    console.log(
+      'postTransactResponse2 (Standard Transaction)',
+      postTransactResponse2
+    );
+
+    return getMine();
+  })
+  .then((getMineResponse2) => {
+    console.log('getMineResponse2', getMineResponse2);
+  });
