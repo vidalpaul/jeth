@@ -57,6 +57,11 @@ app.post('/account/transact', (req, res, next) => {
   res.json({ transaction });
 });
 
+app.get('/account/balance', (req, res, next) => {
+  const balance = Account.calculateBalance({ address: account.address, state });
+  res.json({ balance });
+});
+
 app.use((err, req, res, next) => {
   console.error('Internal server error: ', err);
   res.status(500).json({ message: err.message });
