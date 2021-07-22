@@ -23,6 +23,10 @@ class Account {
     const keyFromPublic = ec.keyFromPublic(publicKey, 'hex');
     return keyFromPublic.verify(keccakHash(data), signature);
   }
+
+  static calculateBalance({ address, state }) {
+    return state.getAccount({ address }).balance;
+  }
 }
 
 module.exports = Account;
