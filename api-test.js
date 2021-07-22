@@ -30,6 +30,14 @@ const getMine = () => {
   });
 };
 
+const getAccountBalance = () => {
+  return new Promise((resolve, reject) => {
+    request(`${BASE_URL}/account/balance`, (error, response, body) => {
+      return resolve(JSON.parse(body));
+    });
+  });
+};
+
 let toAccountData;
 
 postTransact({})
@@ -58,4 +66,8 @@ postTransact({})
   })
   .then((getMineResponse2) => {
     console.log('getMineResponse2', getMineResponse2);
+    return getAccountBalance();
+  })
+  .then((getAccountBalanceResponse) => {
+    console.log('getAccountBalanceResponse', getAccountBalanceResponse);
   });
