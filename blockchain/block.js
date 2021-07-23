@@ -2,6 +2,7 @@ const { diff } = require('jest-diff');
 const { GENESIS_DATA, MINE_RATE } = require('../config');
 const { keccakHash } = require('../util');
 const Transaction = require('../transaction');
+const Trie = require('../store/trie');
 
 const HASH_LENGTH = 64;
 const MAX_HASH_VALUE = parseInt('f'.repeat(HASH_LENGTH), 16);
@@ -36,6 +37,7 @@ class Block {
 
   static mineBlock({ lastBlock, beneficiary, transactionSeries, stateRoot }) {
     const target = Block.calculateBlockTargetHash({ lastBlock });
+    const transactionsTrie = Trie.buildTrie({ items: transactionSeries });
     let timestamp, truncatedBlockHeaders, header, nonce, underTargetHash;
 
     do {
@@ -46,8 +48,7 @@ class Block {
         difficulty: Block.adjustDifficulty({ lastBlock, timestamp }),
         number: lastBlock.blockHeaders.number + 1,
         timestamp,
-        // will be refactored once Tries are implemented
-        transactionsRoot: keccakHash(transactionSeries),
+        transactionsRoot: transactionsTrie.rootHash,
         stateRoot,
       };
       header = keccakHash(truncatedBlockHeaders);
