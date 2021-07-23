@@ -30,11 +30,14 @@ const getMine = () => {
   });
 };
 
-const getAccountBalance = () => {
+const getAccountBalance = ({ address } = {}) => {
   return new Promise((resolve, reject) => {
-    request(`${BASE_URL}/account/balance`, (error, response, body) => {
-      return resolve(JSON.parse(body));
-    });
+    request(
+      `${BASE_URL}/account/balance` + (address ? `?address=${address}` : ''),
+      (error, response, body) => {
+        return resolve(JSON.parse(body));
+      }
+    );
   });
 };
 
@@ -70,4 +73,8 @@ postTransact({})
   })
   .then((getAccountBalanceResponse) => {
     console.log('getAccountBalanceResponse', getAccountBalanceResponse);
+    return getAccountBalance({ address: toAccountData.address });
+  })
+  .then((getAccountBalanceResponse2) => {
+    console.log('getAccountBalanceResponse2', getAccountBalanceResponse2);
   });

@@ -58,7 +58,11 @@ app.post('/account/transact', (req, res, next) => {
 });
 
 app.get('/account/balance', (req, res, next) => {
-  const balance = Account.calculateBalance({ address: account.address, state });
+  const { address } = req.query;
+  const balance = Account.calculateBalance({
+    address: address || account.address,
+    state,
+  });
   res.json({ balance });
 });
 
