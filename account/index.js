@@ -7,6 +7,7 @@ class Account {
     this.address = this.keyPair.getPublic().encode('hex');
     this.balance = STARTING_BALANCE;
     this.code = code || [];
+    this.generateCodeHash();
   }
 
   generateCodeHash() {
