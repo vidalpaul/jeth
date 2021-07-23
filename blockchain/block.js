@@ -98,6 +98,20 @@ class Block {
         return reject(new Error('The difficulty must only adjust by 1'));
       }
 
+      const rebuiltTransactionsTrie = Trie.buildTrie({
+        items: block.transactionSeries,
+      });
+
+      if (
+        rebuiltTransactionsTrie.rootHash !== block.blockHeaders.transactionsRoot
+      ) {
+        return reject(
+          new Error(
+            `The rebuilt transactions root does not match the block's headers' transaction root`
+          )
+        );
+      }
+
       const target = Block.calculateBlockTargetHash({ lastBlock });
       const { blockHeaders } = block;
       const { nonce } = blockHeaders;
