@@ -2,7 +2,6 @@ const { expect, it, describe, beforeEach } = require('@jest/globals');
 const State = require('../store/state');
 const { keccakHash } = require('../util');
 const Block = require('./block');
-const State = require('../store/state');
 
 describe('Block', () => {
   describe('calculateBlockTargetHash()', () => {
