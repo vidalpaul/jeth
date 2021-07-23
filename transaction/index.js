@@ -1,9 +1,11 @@
 const uuid = require('uuid/v4');
 const Account = require('../account');
+const { MINING_REWARD } = require('../config');
 
 const TRANSACTION_TYPE_MAP = {
   CREATE_ACCOUNT: 'CREATE_ACCOUNT',
   TRANSACT: 'TRANSACT',
+  MINING_REWARD: 'MINING_REWARD',
 };
 
 class Transaction {
@@ -17,7 +19,16 @@ class Transaction {
   }
 
   // Transaction factory
-  static createTransaction({ account, to, value }) {
+  static createTransaction({ account, to, value, beneficiary }) {
+    if (beneficiary) {
+      return new Transaction({
+        to: beneficiary,
+        value: MINING_REWARD,
+        data: {
+          type: TRANSACTION_TYPE_MAP.MINING_REWARD,
+        },
+      });
+    }
     if (to) {
       const transactionData = {
         id: uuid(),
@@ -93,6 +104,20 @@ class Transaction {
     });
   }
 
+  static validateMiningRewardTransaction({ transaction }) {
+    return new Promise((resolve, reject) => {
+      const { value } = transaction;
+      if (value !== MINING_REWARD) {
+        return reject(
+          new Error(
+            `The provided mining reward value ${value} is not equal the official value ${MINING_REWARD}`
+          )
+        );
+      }
+      return resolve();
+    });
+  }
+
   static validateTransactionSeries({ transactionSeries, state }) {
     return new Promise(async (resolve, reject) => {
       for (let transaction of transactionSeries) {
@@ -105,6 +130,12 @@ class Transaction {
               break;
             case TRANSACTION_TYPE_MAP.TRANSACT:
               await Transaction.validateStandardTransaction({
+                transaction,
+                state,
+              });
+              break;
+            case TRANSACTION_TYPE_MAP.MINING_REWARD:
+              await Transaction.validateMiningRewardTransaction({
                 transaction,
                 state,
               });
@@ -125,12 +156,16 @@ class Transaction {
       case TRANSACTION_TYPE_MAP.TRANSACT:
         Transaction.runStandardTransaction({ state, transaction });
         console.log(
-          '-- Updated account data to reflect the standard transaction'
+          ' -- Updated account data to reflect the standard transaction '
         );
         break;
       case TRANSACTION_TYPE_MAP.CREATE_ACCOUNT:
         Transaction.runCreateAccountTransaction({ state, transaction });
-        console.log('-- Stored the account data');
+        console.log(' -- Stored the account data ');
+        break;
+      case TRANSACTION_TYPE_MAP.MINING_REWARD:
+        Transaction.runMiningRewardTransaction({ state, transaction });
+        console.log(' -- Updated account data to reflect the mining reward ');
         break;
       default:
         break;
@@ -150,6 +185,14 @@ class Transaction {
     const { accountData } = transaction.data;
     const { address } = accountData;
     state.putAccount({ address, accountData });
+  }
+
+  static runMiningRewardTransaction({ state, transaction }) {
+    const { to, value } = transaction;
+    const accountData = state.getAccount({ address: to });
+    accountData.balance += value;
+
+    state.putAccount({ address: to, accountData });
   }
 }
 
