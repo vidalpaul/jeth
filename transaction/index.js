@@ -37,7 +37,8 @@ class Transaction {
         id: uuid(),
         from: account.address,
         to,
-        value,
+        value: value || 0,
+        gasLimit: gasLimit || 0,
         data: {
           type: TRANSACTION_TYPE_MAP.TRANSACT,
         },
