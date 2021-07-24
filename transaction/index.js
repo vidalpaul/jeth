@@ -10,21 +10,23 @@ const TRANSACTION_TYPE_MAP = {
 };
 
 class Transaction {
-  constructor({ id, from, to, value, data, signature }) {
+  constructor({ id, from, to, value, data, signature, gasLimit }) {
     this.id = id || uuid();
     this.from = from || '-';
     this.to = to || '-';
     this.value = value || 0;
     this.data = data || '-';
     this.signature = signature || '-';
+    this.gasLimit = gasLimit || 0;
   }
 
   // Transaction factory
-  static createTransaction({ account, to, value, beneficiary }) {
+  static createTransaction({ account, to, value, beneficiary, gasLimit }) {
     if (beneficiary) {
       return new Transaction({
         to: beneficiary,
         value: MINING_REWARD,
+        gasLimit,
         data: {
           type: TRANSACTION_TYPE_MAP.MINING_REWARD,
         },
@@ -55,7 +57,7 @@ class Transaction {
 
   static validateStandardTransaction({ state, transaction }) {
     return new Promise((resolve, reject) => {
-      const { id, from, signature, value, to } = transaction;
+      const { id, from, signature, value, to, gasLimit } = transaction;
       const transactionData = { ...transaction };
       delete transactionData.signature;
       if (
@@ -68,16 +70,26 @@ class Transaction {
         return reject(new Error(`Transaction: ${id} signature is invalid`));
       }
       const fromBalance = state.getAccount({ address: from }).balance;
-      if (value > fromBalance) {
+      if (value + gasLimit > fromBalance) {
         return reject(
           new Error(
-            `Transaction value: ${value} exceeds balance: ${fromBalance}`
+            `Transaction value and gasLimit: ${value} exceeds balance: ${fromBalance}`
           )
         );
       }
       const toAccount = state.getAccount({ address: to });
       if (!toAccount) {
         return reject(new Error(`The to field ${toBalance} does not exist`));
+      }
+      if (toAccount.codeHash) {
+        const { gasUsed } = new Interpreter().runCode(toAccount.code);
+        if (gasUsed > gasLimit) {
+          return reject(
+            new Error(
+              `The transaction needs more gas. Provided: ${gasLimit}. Needs: ${gasUsed}`
+            )
+          );
+        }
       }
       return resolve();
     });
@@ -178,15 +190,19 @@ class Transaction {
 
     if (toAccount.codeHash) {
       const interpreter = new Interpreter();
-      const result = interpreter.runCode(toAccount.code);
+      const { gasUsed, result } = interpreter.runCode(toAccount.code);
       console.log(
         ` -*- Smart contract execution: ${transaction.id} - RESULT: ${result}`
       );
     }
 
-    const { value } = transaction;
+    const { value, gasLimit } = transaction;
+    const refund = gasLimit - gasUsed;
     fromAccount.balance -= value;
+    fromAccount.balance -= gasLimit;
+    fromAccount.balance += refund;
     toAccount.balance += value;
+    toAccount.balance += gasUsed;
     state.putAccount({ address: transaction.from, accountData: fromAccount });
     state.putAccount({ address: transaction.to, accountData: toAccount });
   }
