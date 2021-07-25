@@ -194,7 +194,7 @@ class Transaction {
 
     if (toAccount.codeHash) {
       const interpreter = new Interpreter();
-      ({ gasUsed, result }) = interpreter.runCode(toAccount.code);
+      ({ gasUsed, result } = interpreter.runCode(toAccount.code));
       console.log(
         ` -*- Smart contract execution: ${transaction.id} - RESULT: ${result}`
       );
