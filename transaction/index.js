@@ -189,9 +189,12 @@ class Transaction {
     const fromAccount = state.getAccount({ address: transaction.from });
     const toAccount = state.getAccount({ address: transaction.to });
 
+    let gasUsed = 0;
+    let = result;
+
     if (toAccount.codeHash) {
       const interpreter = new Interpreter();
-      const { gasUsed, result } = interpreter.runCode(toAccount.code);
+      ({ gasUsed, result }) = interpreter.runCode(toAccount.code);
       console.log(
         ` -*- Smart contract execution: ${transaction.id} - RESULT: ${result}`
       );
